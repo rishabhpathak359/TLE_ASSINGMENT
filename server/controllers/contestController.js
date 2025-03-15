@@ -33,7 +33,7 @@ export const contests = async (req, res) => {
 
     const contests = await prisma.contests.findMany({
       where: whereClause,
-      orderBy: { contestDateTime: "asc" }, 
+      orderBy: { contestDateTime: "desc" }, 
       skip: (page - 1) * limit,
       take: limit,
     });
