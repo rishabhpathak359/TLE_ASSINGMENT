@@ -1,0 +1,55 @@
+// This is your Prisma schema file
+// Learn more at: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum UserType {
+  USER
+  ADMIN
+}
+
+enum Platforms {
+  LC  //Leetcode
+  CC  //Codechef
+  CF  //Codeforces
+}
+
+model User {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  email      String?   @unique 
+  password   String?
+  type       UserType
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  bookmarks  Bookmarks[]
+}
+
+model Contests {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  title      String
+  contestDateTime       DateTime
+  duration   String
+  link       String
+  platform   Platforms
+  solution  String     @default("")
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  bookmarks  Bookmarks[]
+}
+
+model Bookmarks {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String    @db.ObjectId
+  contest    Contests  @relation(fields: [contestId], references: [id])
+  contestId  String    @db.ObjectId
+  createdAt  DateTime  @default(now())
+}
