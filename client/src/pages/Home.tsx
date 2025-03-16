@@ -34,8 +34,8 @@ const ContestList = () => {
   const userId = user?.id;
 
   const fetchContests = async (): Promise<ContestsResponse> => {
-    let url1  = `http://localhost:5000/api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
-    let url2  =  `http://localhost:5000/api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
+    let url1  = `https://tle-assingment.onrender.com/api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
+    let url2  =  `https://tle-assingment.onrender.com/api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
     const { data } = await axios.get<ContestsResponse>(
      type === "bookmarks" ? url2 : url1
     );
