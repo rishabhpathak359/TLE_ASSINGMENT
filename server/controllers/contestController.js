@@ -51,3 +51,24 @@ export const contests = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error" });
   }
 };
+
+export const updateSolution = async (req, res) => {
+  const { contestId } = req.params;
+  const { solution } = req.body;
+
+  if (!solution) {
+      return res.status(400).json({ message: "Solution link is required" });
+  }
+
+  try {
+      const updatedContest = await prisma.contests.update({
+          where: { id: contestId },
+          data: { solution },
+      });
+
+      res.status(200).json({ message: "Solution updated successfully", contest: updatedContest });
+  } catch (error) {
+      console.error("Error updating solution:", error);
+      res.status(500).json({ message: "Internal server error" });
+  }
+};

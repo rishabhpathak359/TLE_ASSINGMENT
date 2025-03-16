@@ -12,6 +12,8 @@
   --color-background-dark: #1f2937;
   --color-accent-light: #facc15;
   --color-accent-dark: #eab308;
+  --color-hover-light: #f0f0f0;
+  --color-hover-dark: #2d3748;
 }
 
 /* .dark{

@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes.js";
 import contestRoutes from "./routes/contestRoute.js";
+import bookmarksRoutes from "./routes/bookmarksRoutes.js";
 import { connectToDatabase } from "./utils/dbConnect.js";
 
 dotenv.config();
@@ -14,6 +15,7 @@ app.use(express.json()); // Parse JSON body
 
 app.use("/api/auth", authRoutes);
 app.use("/api/contests", contestRoutes);
+app.use("/api/user", bookmarksRoutes)
 app.get("/" , (req,res)=>{
   res.send("Hello")
 })

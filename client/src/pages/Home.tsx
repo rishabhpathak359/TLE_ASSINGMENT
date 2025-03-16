@@ -4,8 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Modal from "react-modal";
 import { Button } from "@/components/ui/button";
+import ContestTable from "@/components/ContestTable";
+import useAuth from "@/hooks/useAuth";
 
-// Define types for contest data
 interface Contest {
   id: string;
   title: string;
@@ -13,34 +14,39 @@ interface Contest {
   duration: string;
   link: string;
   platform: string;
-  solutionLink?: string; // Solution YouTube link for past contests
+  solution?: string; 
 }
 
 interface ContestsResponse {
   contests: Contest[];
-  totalPages: number;
+  totalPages: string;
 }
 
-Modal.setAppElement("#root"); // Ensure accessibility
+Modal.setAppElement("#root"); 
 
 const ContestList = () => {
   const [page, setPage] = useState<number>(1);
-  const [type, setType] = useState<"upcoming" | "past">("upcoming");
+  const [type, setType] = useState<"upcoming" | "past" | "bookmarks">("upcoming");
   const [platforms, setPlatforms] = useState<string[]>(["all"]);
-  const [selectedSolution, setSelectedSolution] = useState<string | null>(null);
+  const [selectedSolution, setSelectedSolution] = useState<string | undefined>(undefined);
   const limit: number = 10;
+  const { user, isAuthenticated } = useAuth();
+  const userId = user?.id;
 
   const fetchContests = async (): Promise<ContestsResponse> => {
+    let url1  = `http://localhost:5000/api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
+    let url2  =  `http://localhost:5000/api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
     const { data } = await axios.get<ContestsResponse>(
-      `http://localhost:5000/api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`
+     type === "bookmarks" ? url2 : url1
     );
-    return data;
+    // console.log(data);
+    return  data;
   };
 
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery<ContestsResponse>({
     queryKey: ["contests", page, type, platforms],
     queryFn: fetchContests,
-    keepPreviousData: true,
+    placeholderData: previousData => previousData ?? undefined
   });
 
   useEffect(() => {
@@ -48,13 +54,22 @@ const ContestList = () => {
   }, [type, platforms]);
 
   const togglePlatform = (platform: string) => {
-    setPlatforms((prev) =>
-      prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev.filter((p) => p !== "all"), platform]
-    );
+    setPlatforms((prev) => {
+      if (platform === "all") return ["all"];
+      return prev.includes(platform)
+        ? prev.filter((p) => p !== platform)
+        : [...prev.filter((p) => p !== "all"), platform];
+    });
   };
 
+  // const totalPages = data?.totalPages ?? 1;
+  // const someValue: string | undefined = someNullableValue ?? undefined;
+
+
+  
+
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4 mt-20">
       {/* Filters Section */}
       <div className="flex justify-between items-center mb-4">
         <div className="space-x-2">
@@ -64,6 +79,11 @@ const ContestList = () => {
           <Button variant={type === "past" ? "default" : "outline"} onClick={() => setType("past")}>
             Past
           </Button>
+          { isAuthenticated &&
+            <Button variant={type === "bookmarks" ? "default" : "outline"} onClick={() => setType("bookmarks")}>
+            Bookmarks
+          </Button>
+          }
         </div>
         <div className="flex space-x-2">
           {["all", "LC", "CC", "CF"].map((p) => (
@@ -79,75 +99,37 @@ const ContestList = () => {
       </div>
 
       {/* Upcoming Contests Section */}
-      {type === "upcoming" && data?.contests.length ? (
-        <div className="bg-gray-100 p-4 rounded-lg shadow-lg mb-6">
-          <h2 className="text-xl font-semibold mb-3">Upcoming Contests</h2>
-          <div className="grid gap-4">
-            {data?.contests.map((contest) => (
-              <div
-                key={contest.id}
-                className="border rounded-lg p-4 shadow-md flex justify-between items-center hover:shadow-lg transition bg-white"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold">{contest.title}</h3>
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Calendar size={16} /> {new Date(contest.contestDateTime).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Timer size={16} /> {contest.duration}
-                  </p>
-                </div>
-                <a href={contest.link} target="_blank" className="text-blue-500 hover:underline">
-                  View Contest
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      {type === "upcoming" && 
+      (data as any)?.contests?.length ? 
+      (
+           <ContestTable contests={(data as any)?.contests} isPast={false} type={type} />
+      ) 
+      : null
+      }
 
       {/* Past Contests Section */}
-      {type === "past" && data?.contests.length ? (
-        <div className="mt-6">
-          <h2 className="text-xl font-semibold mb-3">Past Contests</h2>
-          <div className="space-y-4">
-            {data?.contests.map((contest) => (
-              <div
-                key={contest.id}
-                className="border rounded-lg p-4 shadow-md flex justify-between items-center hover:shadow-lg transition"
-              >
-                <div>
-                  <h3 className="text-lg font-semibold">{contest.title}</h3>
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Calendar size={16} /> {new Date(contest.contestDateTime).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-500 flex items-center gap-1">
-                    <Timer size={16} /> {contest.duration}
-                  </p>
-                </div>
-                <div className="flex space-x-3">
-                  <a href={contest.link} target="_blank" className="text-blue-500 hover:underline">
-                    View Contest
-                  </a>
-                  {contest.solution && (
-                    <Button variant="outline" onClick={() => setSelectedSolution(contest.solution)}>
-                      <PlayCircle size={16} className="mr-1" /> View Solution
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
+      {type === "past" && 
+      (data as any)?.contests.length ? 
+      (
+
+        <ContestTable contests={(data as any)?.contests} isPast={true}  type={type}/>
+      ) 
+      : null}
+
+      {
+        type === "bookmarks" &&
+        (data as any)?.bookmarks?.length ? (
+          <ContestTable contests={data as any} isPast={true} type={type} />
+        ) : null
+      }
 
       {/* Pagination Controls */}
       <div className="flex justify-between items-center mt-4">
         <Button onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1}>
           <ChevronLeft size={16} /> Prev
         </Button>
-        <span>Page {page} / {data?.totalPages || 1}</span>
-        <Button onClick={() => setPage((prev) => prev + 1)} disabled={page >= (data?.totalPages || 1)}>
+        <span>Page {page} / {(data as any)?.totalPages || 1}</span>
+        <Button onClick={() => setPage((prev) => prev + 1)} disabled={page >= ((data as any)?.totalPages || 1)}>
           Next <ChevronRight size={16} />
         </Button>
       </div>
@@ -155,13 +137,13 @@ const ContestList = () => {
       {/* Solution Modal */}
       <Modal
         isOpen={!!selectedSolution}
-        onRequestClose={() => setSelectedSolution(null)}
+        onRequestClose={() => setSelectedSolution(undefined)}
         className="bg-white rounded-lg shadow-xl max-w-lg mx-auto p-4 relative"
         // overlayClassName="fixed inset-0  bg-opacity-50 flex items-center justify-center"
       >
         <button
           className="absolute top-2 right-2 p-1 text-gray-600 hover:text-black"
-          onClick={() => setSelectedSolution(null)}
+          onClick={() => setSelectedSolution(undefined)}
         >
           <X size={20} />
         </button>
@@ -172,7 +154,7 @@ const ContestList = () => {
           allowFullScreen
         />
         <div className="flex justify-between mt-4">
-          <Button variant="outline" onClick={() => setSelectedSolution(null)}>Close</Button>
+          <Button variant="outline" onClick={() => setSelectedSolution(undefined)}>Close</Button>
           <a href={selectedSolution} target="_blank" className="text-blue-500 hover:underline">
             Open in New Tab
           </a>

@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 export const signup = async (req, res) => {
   try {
-    const { name, email, password, type } = req.body;
+    let { name, email, password, type = "USER" } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
