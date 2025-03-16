@@ -28,12 +28,12 @@ export const contests = async (req, res) => {
 
     // console.log("🕒 Current Date:", currentDateTime);
     // console.log("🔍 Filter Conditions:", JSON.stringify(whereClause, null, 2));
-
+    let orderBy = type ==="upcoming" ? "asc" : "desc"
     const totalContests = await prisma.contests.count({ where: whereClause });
 
     const contests = await prisma.contests.findMany({
       where: whereClause,
-      orderBy: { contestDateTime: "desc" }, 
+      orderBy: { contestDateTime: orderBy }, 
       skip: (page - 1) * limit,
       take: limit,
     });
