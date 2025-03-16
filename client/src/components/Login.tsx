@@ -19,7 +19,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/login", formData);
+      const { data } = await axios.post("https://tle-assingment.onrender.com/api/auth/login", formData);
 
       if (data.token && data.user) {
         login(data.token, data.user);
