@@ -40,7 +40,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
 
     const fetchBookmarks = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/user/bookmarks?userId=${userId}`);
+        const response = await fetch(`https://tle-assingment.onrender.com/api/user/bookmarks?userId=${userId}`);
         const data = await response.json();
         setBookmarkedContests(data.bookmarks.map((bookmark: any) => bookmark.contest));
       } catch (error) {
@@ -61,7 +61,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
     const isBookmarked = bookmarkedContests?.some((b) => b.id === contest.id);
 
     try {
-      const response = await fetch("http://localhost:5000/api/user/bookmarks", {
+      const response = await fetch("https://tle-assingment.onrender.com/api/user/bookmarks", {
         method: isBookmarked ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, contestId: contest.id }),
@@ -94,7 +94,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
     if (!currentContest) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/contests/updateSolution/${currentContest.id}`, {
+      const response = await fetch(`https://tle-assingment.onrender.com/api/contests/updateSolution/${currentContest.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ solution: newSolution }),
