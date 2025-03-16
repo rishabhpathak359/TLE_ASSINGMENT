@@ -71,7 +71,7 @@ const ContestList = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 mt-20">
       {/* Filters Section */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex md:flex-row flex-col md:gap-0 gap-5 justify-between items-center mb-4">
         <div className="space-x-2">
           <Button variant={type === "upcoming" ? "default" : "outline"} onClick={() => setType("upcoming")}>
             Upcoming

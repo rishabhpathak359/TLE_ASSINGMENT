@@ -43,16 +43,17 @@ const Navbar = () => {
         <Link to="/">TLE Eliminators</Link>
       </div>
 
-      {/* Desktop Menu */}
-      <div className="hidden md:flex gap-4 items-center">
-        {/* Theme Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
-        >
-          {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-        </button>
+      {/* Theme Toggle (Outside of Hamburger) */}
 
+      {/* Desktop Menu */}
+      <div className="flex gap-5">
+      <button
+        onClick={toggleTheme}
+        className="p-2  rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600"
+      >
+        {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+      </button>
+      <div className="hidden md:flex gap-4 items-center">
         {isAuthenticated ? (
           <div className="flex items-center gap-2">
             <UserCircle size={24} />
@@ -81,6 +82,7 @@ const Navbar = () => {
           </>
         )}
       </div>
+      
 
       {/* Mobile Menu Button */}
       <button
@@ -89,19 +91,11 @@ const Navbar = () => {
       >
         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
+      </div>
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
         <div className="absolute top-16 right-4 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 flex flex-col gap-4 md:hidden">
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 flex items-center gap-2"
-          >
-            {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
-            <span>Toggle Theme</span>
-          </button>
-
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-2">
