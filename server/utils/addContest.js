@@ -4,6 +4,8 @@ import { codechefScraper } from "../scrapper/codechefScraper.js";
 import { leetCodeScraper } from "../scrapper/leetCodeScraper.js";
 import prisma from "./dbConnect.js";
 import cron from "node-cron";
+import { codeforcesScraper } from "../scrapper/codeforcesScrapper.js";
+// import { codeforcesScraper } from "../scraper.js";
 
 const playlists = {
   LC: "PLcXpkI9A-RZI6FhydNz3JBt_-p_i25Cbr",
@@ -54,48 +56,50 @@ const addContestsToDB = async () => {
   try {
     console.log("🔄 Scraping contests from all platforms...");
     // Fetch contests from all platforms
-    const { upcomingContests: ccUpcoming, pastContests: ccPast } = await codechefScraper();
-    const { upcomingContests: lcUpcoming, pastContests: lcPast } = await leetCodeScraper();
-    // const { upcomingContests: cfUpcoming, pastContests: cfPast } = await codeforcesScraper();
-    const codechefAllContests = [...ccUpcoming, ...ccPast];
-    const leetcodeAllContests = [...lcUpcoming, ...lcPast];
-    // const codeforcesAllContests = [cfUpcoming, cfPast];
+    // const { upcomingContests: ccUpcoming, pastContests: ccPast } = await codechefScraper();
+    // const { upcomingContests: lcUpcoming, pastContests: lcPast } = await leetCodeScraper();
+    const { upcomingContests: cfUpcoming, pastContests: cfPast } = await codeforcesScraper();
+    // const codechefAllContests = [...ccUpcoming, ...ccPast];
+    // const leetcodeAllContests = [...lcUpcoming, ...lcPast];
+    const codeforcesAllContests = [...cfUpcoming, ...cfPast];
+    console.log(codeforcesAllContests)
+    // const lcSolutionVideos = await fetchSolutionVideos(playlists.LC);
+    // const ccSolutionVideos = await fetchSolutionVideos(playlists.CC);
+    const cfSolutionVideos = await fetchSolutionVideos(playlists.CF); 
 
-    const lcSolutionVideos = await fetchSolutionVideos(playlists.LC);
-    const ccSolutionVideos = await fetchSolutionVideos(playlists.CC);
-    // const cfSolutionVideos = await fetchSolutionVideos(playlists.CF); 
-
-    leetcodeAllContests.forEach((contest) => {
-      const matchedVideo = lcSolutionVideos.find((video) =>
-        video.title.includes(contest.name.toLowerCase())
-      );
-      if (matchedVideo) {
-        contest.solution = matchedVideo.link;
-      }
-      contest.platform = "LC";
-    });
-     codechefAllContests.forEach((contest) => {
-      const id = contest.name.substring(5);
-      console.log(id);
-      const matchedVideo = ccSolutionVideos.find((video) =>
-        video.title.includes(id)
-      );
-      if (matchedVideo) {
-        contest.solution = matchedVideo.link;
-      }
-      contest.platform = "CC";
-    });
-    // codeforcesAllContests.forEach((contest) => {
-    //   const matchedVideo = cfSolutionVideos.find((video) =>
+    // leetcodeAllContests.forEach((contest) => {
+    //   const matchedVideo = lcSolutionVideos.find((video) =>
     //     video.title.includes(contest.name.toLowerCase())
     //   );
     //   if (matchedVideo) {
     //     contest.solution = matchedVideo.link;
     //   }
-    //   contest.platform = "CF";
+    //   contest.platform = "LC";
     // });
-     const allContests = [...codechefAllContests, ...leetcodeAllContests];
-    console.log(`📌 Total Contests Found: ${allContests.length}`);
+    //  codechefAllContests.forEach((contest) => {
+    //   const id = contest.name.substring(5);
+    //   console.log(id);
+    //   const matchedVideo = ccSolutionVideos.find((video) =>
+    //     video.title.includes(id)
+    //   );
+    //   if (matchedVideo) {
+    //     contest.solution = matchedVideo.link;
+    //   }
+    //   contest.platform = "CC";
+    // });
+    codeforcesAllContests.forEach((contest) => {
+      console.log("ContestName" ,contest.name)
+      const matchedVideo = cfSolutionVideos.find((video) =>
+        contest?.name?.toLowerCase().includes(video.title.split(" |")[0].trim())
+      );
+      if (matchedVideo) {
+        contest.solution = matchedVideo.link;
+      }
+      contest.platform = "CF";
+    });
+    //  const allContests = [...codechefAllContests, ...leetcodeAllContests];
+    const allContests = codeforcesAllContests;
+    // console.log(`📌 Total Contests Found: ${JSON.stringify(codeforcesAllContests, null, 2)}`);
     for (const contest of allContests) {
       const existingContest = await prisma.contests.findFirst({
         where: { title: contest.name, contestDateTime: contest.contestDateTime }

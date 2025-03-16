@@ -289,12 +289,15 @@ export const codeforcesScraper = async () => {
             return date.toISOString().split("T")[0];
           }
           const columns = element.querySelectorAll("td");
+          const date = columns[2]?.innerText.trim().split("\n")[0];
+          const time = columns[2]?.innerText.trim().split("\n")[1] ;
+          const match = time ? time.match(/^\d{2}:\d{2}/) : null;
+          const contestDateTime = match ? `${date} ${match[0]}` : "Invalid Date";
           return {
             name:
               columns[0]?.innerText.trim().split("\n")[0] || "Unknown Contest",
             link: columns[0]?.querySelector("a")?.href || "No Link",
-            date: columns[2]?.innerText?.trim().split("\n")[0], // Standardize date
-            time: columns[2]?.innerText?.trim().split("\n")[1] || "No Time",
+            contestDateTime: contestDateTime || "No Date",
             duration: columns[3]?.innerText.trim() || "No Duration",
           };
         }, row);

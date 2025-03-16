@@ -185,7 +185,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
       </table>
 
       {/* Solution Edit Modal */}
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="p-6 bg-white shadow-lg rounded-lg w-1/3 mx-auto mt-20">
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal} className="p-6 bg-white dark:bg-gray-900 shadow-lg rounded-lg w-1/3 mx-auto mt-20">
         <h2 className="text-xl font-bold mb-4">Edit Solution</h2>
         <p className="mb-2">Existing Solution: {currentContest?.solution || "Not Available"}</p>
         <input type="text" className="border p-2 w-full mb-4" value={newSolution} onChange={(e) => setNewSolution(e.target.value)} />
