@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Modal from "react-modal";
+import { defaulturl } from "@/utils/constants";
 
 interface Contest {
   id: string;
@@ -40,7 +41,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
 
     const fetchBookmarks = async () => {
       try {
-        const response = await fetch(`https://tle-assingment.onrender.com/api/user/bookmarks?userId=${userId}`);
+        const response = await fetch(`${defaulturl}api/user/bookmarks?userId=${userId}`);
         const data = await response.json();
         setBookmarkedContests(data.bookmarks.map((bookmark: any) => bookmark.contest));
       } catch (error) {
@@ -61,7 +62,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) =
     const isBookmarked = bookmarkedContests?.some((b) => b.id === contest.id);
 
     try {
-      const response = await fetch("https://tle-assingment.onrender.com/api/user/bookmarks", {
+      const response = await fetch(`${defaulturl}api/user/bookmarks`, {
         method: isBookmarked ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, contestId: contest.id }),

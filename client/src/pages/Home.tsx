@@ -6,6 +6,7 @@ import Modal from "react-modal";
 import { Button } from "@/components/ui/button";
 import ContestTable from "@/components/ContestTable";
 import useAuth from "@/hooks/useAuth";
+import { defaulturl } from "@/utils/constants";
 
 interface Contest {
   id: string;
@@ -34,8 +35,8 @@ const ContestList = () => {
   const userId = user?.id;
 
   const fetchContests = async (): Promise<ContestsResponse> => {
-    let url1  = `https://tle-assingment.onrender.com/api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
-    let url2  =  `https://tle-assingment.onrender.com/api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
+    let url1  = `${defaulturl}api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
+    let url2  =  `${defaulturl}api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
     const { data } = await axios.get<ContestsResponse>(
      type === "bookmarks" ? url2 : url1
     );

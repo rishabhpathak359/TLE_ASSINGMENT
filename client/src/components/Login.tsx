@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import { defaulturl } from "@/utils/constants";
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -19,7 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("https://tle-assingment.onrender.com/api/auth/login", formData);
+      const { data } = await axios.post(`${defaulturl}api/auth/login`, formData);
 
       if (data.token && data.user) {
         login(data.token, data.user);

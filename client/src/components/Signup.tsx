@@ -1,3 +1,4 @@
+import { defaulturl } from "@/utils/constants";
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -17,7 +18,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("https://tle-assingment.onrender.com/api/auth/signup", formData);
+      const { data } = await axios.post(`${defaulturl}api/auth/signup`, formData);
 
       if (data.user) {
         toast.success("Signup Successful! 🎉");
