@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, Timer, Calendar, PlayCircle, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Modal from "react-modal";

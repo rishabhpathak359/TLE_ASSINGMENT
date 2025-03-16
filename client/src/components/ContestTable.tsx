@@ -22,7 +22,7 @@ interface ContestTableProps {
 }
 
 const ContestTable: React.FC<ContestTableProps> = ({ contests, isPast, type }) => {
-  const displayedContests = type === "bookmarks" ? contests = (contests as any).bookmarks.map((bookmark: any) => bookmark.contest) : contests;
+  // const displayedContests = type === "bookmarks" ? contests = (contests as any).bookmarks.map((bookmark: any) => bookmark.contest) : contests;
   const [bookmarkedContests, setBookmarkedContests] = useState<Contest[]>([]);
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
