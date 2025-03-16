@@ -17,7 +17,7 @@ const Signup = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("http://localhost:5000/api/auth/signup", formData);
+      const { data } = await axios.post("https://tle-assingment.onrender.com/api/auth/signup", formData);
 
       if (data.user) {
         toast.success("Signup Successful! 🎉");
