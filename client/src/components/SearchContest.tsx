@@ -49,7 +49,7 @@ const SearchContest = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-center w-full mt-28">
+    <div className="relative flex flex-col items-center w-full mt-44 px-5">
       <div className="hidden fixed inset-0 md:hidden md:dark:flex items-center justify-center pointer-events-none">
       <div className="absolute w-80 h-80 dark:block hidden bg-gray-500 opacity-20 blur-3xl rounded-full top-1/4 left-1/4"></div>
       <div className="absolute w-64 h-64 dark:block hidden bg-gray-500 opacity-20 blur-3xl rounded-full bottom-1/4 right-1/4"></div>
@@ -62,7 +62,7 @@ const SearchContest = () => {
         placeholder="Search contests..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="flex items-center w-full md:w-2/3  bg-gray-200 dark:bg-background/40 border text-black dark:text-white px-4 py-3 rounded-full shadow-md cursor-pointer transition-all duration-200 focus-within:ring-2  hover:bg-gray-300 "
+        className="flex items-center w-full md:w-2/3  bg-gray-200 dark:bg-background/40 border text-black dark:text-white px-4 py-3 rounded-full shadow-md cursor-pointer transition-all duration-200 focus-within:ring-1 focus-within:ring-white  hover:bg-gray-300 "
         />
 
       {/* Loader */}
@@ -74,7 +74,7 @@ const SearchContest = () => {
 
       {/* Search Results Dropdown */}
       {results.length > 0 && (
-        <ul className="w-1/2 md:w-2/3 mt-2 text-white bg-background/40 backdrop-blur-lg border border-gray-700 rounded-md">
+        <ul className="w-full md:w-2/3 mt-2 text-white bg-background/40 backdrop-blur-lg border border-gray-700 rounded-md">
           {results.map((contest) => (
             <li
               key={(contest as any).id}
@@ -93,7 +93,15 @@ const SearchContest = () => {
       )}
 
       {/* Render Selected Contest */}
-      {selectedContest && <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />}
+      {selectedContest &&
+         <div className="relative mt-10 pb-10  w-full md:w-max px-2">
+         <div className=" overflow-x-auto">
+         <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
+         </div>
+         {/* <Pagination totalPages={pastData.totalPages || 1} setPage={setPage} page={page} /> */}
+       </div>
+      //  <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
+       }
     </div>
   );
 };

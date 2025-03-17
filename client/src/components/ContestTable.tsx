@@ -3,11 +3,13 @@
 // import React, { useEffect, useState } from "react";
 // import { toast } from "react-hot-toast";
 // import { useNavigate } from "react-router-dom";
-// import Modal from "react-modal";
+import Modal from "react-modal";
 // import { defaulturl } from "@/utils/constants";
 
 import useAuth from "@/hooks/useAuth";
-import { BookmarkCheckIcon, BookmarkIcon } from "lucide-react";
+import { BookmarkCheckIcon, BookmarkIcon, EditIcon } from "lucide-react";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface Contest {
   id: string;
@@ -242,12 +244,78 @@ interface ContestTableProps {
 
 // import React from 'react'
 
+// import { useState } from "react";
+// import Modal from "react-modal";
+// import { BookmarkIcon, BookmarkCheckIcon, EditIcon } from "lucide-react";
+// import { useAuth } from "../context/AuthContext";
+
+// interface ContestTableProps {
+//   contests: {
+//     id: string;
+//     title: string;
+//     link: string;
+//     contestDateTime: string;
+//     duration: string;
+//     solution: string;
+//     platform: string;
+//   }[];
+// }
 
 const ContestTable: React.FC<ContestTableProps> = ({ contests }) => {
-  const { bookmarkedContests, toggleBookmark } = useAuth();
+  const { bookmarkedContests, toggleBookmark, user } = useAuth();
+  const userType = user?.type;
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [selectedContest, setSelectedContest] = useState<any>(null);
+  const [newSolution, setNewSolution] = useState("");
+
+  const openModal = (contest: any) => {
+    setSelectedContest(contest);
+    // setNewSolution(contest.solution);
+    setModalIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setSelectedContest(null);
+    setNewSolution("");
+  };
+
+    const updateSolution = async () => {
+    if (!selectedContest) return;
+
+    try {
+      const response = await fetch(`https://tle-assingment.onrender.com/api/contests/updateSolution/${selectedContest.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ solution: newSolution }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update solution");
+
+      toast.success("Solution updated successfully!");
+
+      // Update contest data locally
+      // const updatedContests = contests.map((contest) =>
+      //   contest.id === selectedContest.id ? { ...contest, solution: newSolution } : contest
+      // );
+      // setNewDisplayedContests(updatedContests);
+
+      // Close the modal
+      closeModal();
+    } catch (error) {
+      console.error("Error updating solution:", error);
+      toast.error("Failed to update solution!");
+    }
+  };
+
+  // const handleSolutionUpdate = () => {
+  //   // API call to update the contest solution
+  //   console.log(`Updating solution for ${selectedContest?.title}: ${newSolution}`);
+  //   closeModal();
+  // };
 
   return (
-    <div className=" overflow-x-auto">
+    <div className="overflow-x-auto">
       <table className="border-collapse bg-white/20 dark:bg-black/30 backdrop-blur-md shadow-lg rounded-xl text-gray-300">
         <thead>
           <tr className="border-b border-gray-700 text-left text-sm uppercase">
@@ -257,6 +325,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests }) => {
             <th className="p-4 text-black dark:text-white whitespace-nowrap">Solution</th>
             <th className="p-4 text-black dark:text-white whitespace-nowrap">Platform</th>
             <th className="p-4 text-center text-black dark:text-white whitespace-nowrap">Bookmark</th>
+            {userType === "ADMIN" && <th className="p-4 text-center text-black dark:text-white whitespace-nowrap">Edit/Upload</th>}
           </tr>
         </thead>
         <tbody>
@@ -265,7 +334,7 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests }) => {
 
             return (
               <tr key={index} className="border-b border-gray-700 transition">
-                <td className="p-4 text-blue-400 break-words ">
+                <td className="p-4 text-blue-400 break-words">
                   <a
                     href={contest.link}
                     className="text-blue-600 dark:text-blue-400 hover:underline hover:cursor-pointer"
@@ -282,20 +351,79 @@ const ContestTable: React.FC<ContestTableProps> = ({ contests }) => {
                     View Solution
                   </a>
                 </td>
-                <td className="p-4 whitespace-nowrap">{contest.platform}</td>
+                <td className="p-4 whitespace-nowrap text-black dark:text-white">{contest.platform}</td>
                 <td className="p-4 text-center">
                   <button
                     onClick={() => toggleBookmark(contest)}
-                    className="p-2 rounded hover:text-blue-400 dark:hover:text-white transition hover:cursor-pointer"
+                    className="p-2 rounded text-black dark:text-white dark:hover:text-white transition hover:cursor-pointer"
                   >
                     {isBookmarked ? <BookmarkCheckIcon size={18} /> : <BookmarkIcon size={18} />}
                   </button>
                 </td>
+                {userType === "ADMIN" && (
+                  <td className="p-4 text-center">
+                    <button
+                      onClick={() => openModal(contest)}
+                      className="p-2 rounded text-black dark:text-white dark:hover:text-white transition hover:cursor-pointer"
+                    >
+                      <EditIcon size={18} />
+                    </button>
+                  </td>
+                )}
               </tr>
             );
           })}
         </tbody>
       </table>
+
+      {/* Solution Edit Modal */}
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        contentLabel="Edit Solution"
+        className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-lg "
+        overlayClassName="fixed inset-0 bg-black/30"
+      >
+        <div className="bg-white/30 dark:bg-background/40 backdrop-blur-lg p-6 rounded-lg shadow-lg w-96">
+          <h2 className="text-lg font-semibold text-black dark:text-white mb-4">Edit Solution</h2>
+          {selectedContest && (
+            <>
+              <p className="text-black dark:text-gray-300 mb-2 font-bold text-lg">
+                <strong></strong> {selectedContest.title}
+              </p>
+              <p>Existing Solution:</p>
+              <input
+                type="text"
+                className="w-full p-2 border rounded-lg mb-5 mt-1 text-black dark:text-white "
+                value={selectedContest.solution}
+                readOnly
+                // onChange={(e) => setNewSolution(e.target.value)}
+              />
+                <p>New Solution:</p>
+               <input
+                type="text"
+                className="w-full p-2 border rounded-lg mt-1 text-black dark:text-white "
+                value={newSolution}
+                onChange={(e) => setNewSolution(e.target.value)}
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <button
+                  className="hover:cursor-pointer text-white px-4 py-2 rounded-lg"
+                  onClick={closeModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="dark:bg-black border hover:cursor-pointer text-white px-4 py-2 rounded-lg"
+                  onClick={updateSolution}
+                >
+                  Save
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 };

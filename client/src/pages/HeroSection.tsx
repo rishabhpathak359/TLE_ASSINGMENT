@@ -44,7 +44,7 @@ const HeroSection = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
-        className="z-10 mt-28"
+        className="z-10 mt-28 px-5"
       >
         <p className="text-sm uppercase tracking-wide px-3 py-1 rounded-full inline-block mb-4 transition-colors duration-300 bg-gray-200 text-black dark:bg-gray-800 dark:text-white">
           Stay Ahead with Coding Contests

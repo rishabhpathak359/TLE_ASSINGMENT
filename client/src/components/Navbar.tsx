@@ -8,7 +8,7 @@ const Navbar = () => {
   const { user, isAuthenticated, logout, bookmarkedContests } = useAuth();
   // const navigate = useNavigate();
 
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const [theme, setTheme] = useState(localStorage.getItem("theme") || "dark");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -20,6 +20,7 @@ const Navbar = () => {
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
   };
+  
 
   return (
     <nav className="fixed top-0 left-0 w-full backdrop-blur-lg z-50 bg-transparent text-gray-800 dark:text-gray-100 py-6 md:py-8 px-6 md:px-16 flex justify-between items-center shadow-md">
@@ -37,7 +38,7 @@ const Navbar = () => {
       <div className="flex md:hidden items-center gap-4">
         {/* Bookmarks Button */}
         {isAuthenticated && (
-          <Link to="/bookmarks" className="relative">
+          <Link to="/contests/bookmarks" className="relative">
             <Bookmark size={24} className="text-blue-600 dark:text-white" />
             {bookmarkedContests.length > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
