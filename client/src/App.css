@@ -22,7 +22,19 @@
   --color-background: var(--color-background-dark);
   --color-accent: var(--color-accent-dark);
 } */
+::-webkit-scrollbar {
+  display: none;
+}
 
+/* Hide scrollbar for Firefox */
+html {
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for IE and Edge */
+body {
+  -ms-overflow-style: none;
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);

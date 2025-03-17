@@ -1,12 +1,17 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Modal from "react-modal";
 import { Button } from "@/components/ui/button";
 import ContestTable from "@/components/ContestTable";
-import useAuth from "@/hooks/useAuth";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 import { defaulturl } from "@/utils/constants";
+import SolutionModal from "@/components/SolutionModal";
+import Pagination from "@/components/Pagination";
+import UpcomingContestsCarousel from "@/components/UpcomingContestsCarousel";
+import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
 interface Contest {
   id: string;
@@ -15,44 +20,43 @@ interface Contest {
   duration: string;
   link: string;
   platform: string;
-  solution?: string; 
+  solution?: string;
 }
 
 interface ContestsResponse {
   contests: Contest[];
-  totalPages: string;
+  totalPages: number;
 }
 
-Modal.setAppElement("#root"); 
+Modal.setAppElement("#root");
 
 const ContestList = () => {
   const [page, setPage] = useState<number>(1);
-  const [type, setType] = useState<"upcoming" | "past" | "bookmarks">("upcoming");
   const [platforms, setPlatforms] = useState<string[]>(["all"]);
   const [selectedSolution, setSelectedSolution] = useState<string | undefined>(undefined);
   const limit: number = 10;
-  const { user, isAuthenticated } = useAuth();
-  const userId = user?.id;
-
-  const fetchContests = async (): Promise<ContestsResponse> => {
-    let url1  = `${defaulturl}api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
-    let url2  =  `${defaulturl}api/user/bookmarks?userId=${userId}&platforms=${platforms.join(",")}`; 
-    const { data } = await axios.get<ContestsResponse>(
-     type === "bookmarks" ? url2 : url1
-    );
-    // console.log(data);
-    return  data;
+  const navigate = useNavigate();
+  const fetchContests = async (type: "upcoming" | "past"): Promise<ContestsResponse> => {
+    let url = `${defaulturl}api/contests/getContests?page=${page}&limit=${limit}&type=${type}&platforms=${platforms.join(",")}`;
+    const { data } = await axios.get<ContestsResponse>(url);
+    return data;
   };
 
-  const { data } = useQuery<ContestsResponse>({
-    queryKey: ["contests", page, type, platforms],
-    queryFn: fetchContests,
-    placeholderData: previousData => previousData ?? undefined
+  const { data: upcomingData } = useQuery<ContestsResponse>({
+    queryKey: ["contests", "upcoming", page, platforms],
+    queryFn: () => fetchContests("upcoming"),
+    placeholderData: (previousData) => previousData ?? undefined,
+  });
+
+  const { data: pastData } = useQuery<ContestsResponse>({
+    queryKey: ["contests", "past", page, platforms],
+    queryFn: () => fetchContests("past"),
+    placeholderData: (previousData) => previousData ?? undefined,
   });
 
   useEffect(() => {
-    setPage(1); // Reset to first page when filters change
-  }, [type, platforms]);
+    setPage(1);
+  }, [platforms]);
 
   const togglePlatform = (platform: string) => {
     setPlatforms((prev) => {
@@ -63,106 +67,61 @@ const ContestList = () => {
     });
   };
 
-  // const totalPages = data?.totalPages ?? 1;
-  // const someValue: string | undefined = someNullableValue ?? undefined;
-
-
-  
-
   return (
-    <div className="max-w-4xl mx-auto p-4 mt-20">
-      {/* Filters Section */}
-      <div className="flex md:flex-row flex-col md:gap-0 gap-5 justify-between items-center mb-4">
-        <div className="space-x-2">
-          <Button variant={type === "upcoming" ? "default" : "outline"} onClick={() => setType("upcoming")}>
-            Upcoming
-          </Button>
-          <Button variant={type === "past" ? "default" : "outline"} onClick={() => setType("past")}>
-            Past
-          </Button>
-          { isAuthenticated &&
-            <Button variant={type === "bookmarks" ? "default" : "outline"} onClick={() => setType("bookmarks")}>
-            Bookmarks
-          </Button>
-          }
-        </div>
-        <div className="flex space-x-2">
-          {["all", "LC", "CC", "CF"].map((p) => (
-            <Button
-              key={p}
-              variant={platforms.includes(p) ? "default" : "outline"}
-              onClick={() => togglePlatform(p)}
-            >
-              {p === "all" ? "All Platforms" : p}
-            </Button>
-          ))}
-        </div>
+    <div className="relative flex h-screen bg-background text-white">
+      <div className=" fixed inset-0 md: md:dark:flex items-center justify-center pointer-events-none">
+      <div className="absolute w-80 h-80 dark:block  bg-gray-500 opacity-20 blur-3xl rounded-full top-1/4 left-1/4"></div>
+      <div className="absolute w-64 h-64 dark:block  bg-gray-500 opacity-20 blur-3xl rounded-full bottom-1/12 right-1/5"></div>
+
+        {/* <div className="w-[800px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(0,255,170,0.3)_0%,rgba(0,0,0,0.8)_70%)] blur-[120px] rotate-[120deg]"></div> */}
       </div>
 
-      {/* Upcoming Contests Section */}
-      {type === "upcoming" && 
-      (data as any)?.contests?.length ? 
-      (
-           <ContestTable contests={(data as any)?.contests} isPast={false} type={type} />
-      ) 
-      : null
-      }
-
-      {/* Past Contests Section */}
-      {type === "past" && 
-      (data as any)?.contests.length ? 
-      (
-
-        <ContestTable contests={(data as any)?.contests} isPast={true}  type={type}/>
-      ) 
-      : null}
-
-      {
-        type === "bookmarks" &&
-        (data as any)?.bookmarks?.length ? (
-          <ContestTable contests={data as any} isPast={true} type={type} />
-        ) : null
-      }
-
-      {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <Button onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1}>
-          <ChevronLeft size={16} /> Prev
-        </Button>
-        <span>Page {page} / {(data as any)?.totalPages || 1}</span>
-        <Button onClick={() => setPage((prev) => prev + 1)} disabled={page >= ((data as any)?.totalPages || 1)}>
-          Next <ChevronRight size={16} />
-        </Button>
-      </div>
-
-      {/* Solution Modal */}
-      <Modal
-        isOpen={!!selectedSolution}
-        onRequestClose={() => setSelectedSolution(undefined)}
-        className="bg-white rounded-lg shadow-xl max-w-lg mx-auto p-4 relative"
-        // overlayClassName="fixed inset-0  bg-opacity-50 flex items-center justify-center"
-      >
-        <button
-          className="absolute top-2 right-2 p-1 text-gray-600 hover:text-black"
-          onClick={() => setSelectedSolution(undefined)}
-        >
-          <X size={20} />
-        </button>
-        <h2 className="text-lg font-semibold mb-3">Solution Video</h2>
-        <iframe
-          src={selectedSolution}
-          className="w-full h-64 rounded-lg"
-          allowFullScreen
-        />
-        <div className="flex justify-between mt-4">
-          <Button variant="outline" onClick={() => setSelectedSolution(undefined)}>Close</Button>
-          <a href={selectedSolution} target="_blank" className="text-blue-500 hover:underline">
-            Open in New Tab
-          </a>
+      <div className="max-w-5xl mx-auto p-4 mt-28">
+      <div 
+      className="flex items-center w-full md:w-2/3  bg-gray-200 dark:bg-background/40 border text-black dark:text-white px-4 py-3 rounded-full shadow-md cursor-pointer transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-gray-300 "
+      onClick={() => navigate("/contests/searchContests")}
+    >
+      <Search className="text-gray-600 dark:text-gray-400 mr-2" size={18} />
+      <span className="text-gray-500 dark:text-gray-400">Search contests...</span>
+    </div>
+        {/* Filters Section */}
+        <div className="flex md:flex-row flex-col md:gap-0 gap-5 justify-between items-center mb-6 mt-5">
+          <div className="flex space-x-2">
+            {["all", "LC", "CC", "CF"].map((p) => (
+              <Button key={p} variant={platforms.includes(p) ? "default" : "outline"} className={`${platforms.includes(p) ?"text-white dark:text-black"  : "text-black dark:text-white"}`}  onClick={() => togglePlatform(p)}>
+                {p === "all" ? "All Platforms" : p}
+              </Button>
+            ))}
+          </div>
         </div>
-      </Modal>
+
+        {/* Upcoming Contests - Cards Layout */}
+        {upcomingData && upcomingData?.contests?.length > 0 && (
+          <div className="mt-10 md:max-w-screen max-w-sm">
+            <h2 className="md:text-xl font-bold mb-2 text-black dark:text-white">Upcoming Contests</h2>
+            <UpcomingContestsCarousel setSelectedSolution={setSelectedSolution} data={upcomingData} />
+          </div>
+        )}
+
+        {/* Past Contests - Table Layout */}
+        {pastData && pastData?.contests?.length > 0 && (
+          <div className="relative mt-10 pb-10  md:max-w-full max-w-sm">
+          <h2 className="text-xl font-bold mb-4 text-black dark:text-white">Past Contests</h2>
+          <div className=" overflow-x-auto">
+            <ContestTable contests={pastData.contests} isPast={true} type="past" />
+          </div>
+          <Pagination totalPages={pastData.totalPages || 1} setPage={setPage} page={page} />
+        </div>
+        
+        )}
+
+        {/* Solution Modal */}
+        <SolutionModal selectedSolution={selectedSolution} setSelectedSolution={setSelectedSolution} />
+      </div>
     </div>
   );
 };
 
 export default ContestList;
+
+

@@ -23,8 +23,10 @@ export const signup = async (req, res) => {
         type,
       },
     });
-
-    res.status(201).json({ message: "User registered successfully", user: newUser });
+    const token = jwt.sign({ userId: newUser.id, type: newUser.type }, JWT_SECRET, {
+      expiresIn: "7d", 
+    });
+    res.status(201).json({ message: "User registered successfully", user: newUser, token });
   } catch (error) {
     console.error("Signup Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
