@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
-import ContestTable from "@/components/ContestTable";
+
 import { defaulturl } from "@/utils/constants";
 
 const SearchContest = () => {
@@ -96,11 +96,11 @@ const SearchContest = () => {
       {selectedContest &&
          <div className="relative mt-10 pb-10  w-full md:w-max px-2">
          <div className=" overflow-x-auto">
-         <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
+       //  <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
          </div>
          {/* <Pagination totalPages={pastData.totalPages || 1} setPage={setPage} page={page} /> */}
        </div>
-      //  <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
+     
        }
     </div>
   );
