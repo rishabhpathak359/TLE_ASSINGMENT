@@ -15,7 +15,8 @@ app.use(express.json()); // Parse JSON body
 
 app.use("/api/auth", authRoutes);
 app.use("/api/contests", contestRoutes);
-app.use("/api/user", bookmarksRoutes)
+app.use("/api/user", bookmarksRoutes);
+// app.use("/api/solutions")
 app.get("/" , (req,res)=>{
   res.send("Hello")
 })

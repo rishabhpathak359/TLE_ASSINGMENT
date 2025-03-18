@@ -1,7 +1,8 @@
 // import React from 'react'
 
 import useAuth from "@/hooks/useAuth";
-import ContestTable from "./ContestTable";
+// import ContestTable from "./ContestTable";
+import ContestList from "./UpcomingContestsCarousel";
 
 const BookMarks = () => {
   const { bookmarkedContests } = useAuth();
@@ -15,18 +16,22 @@ const BookMarks = () => {
         {/* <div className="w-[800px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(0,255,170,0.3)_0%,rgba(0,0,0,0.8)_70%)] blur-[120px] rotate-[120deg]"></div> */}
       </div>
       <div>
-       {bookmarkedContests.length > 0 ?  <div className="relative mt-10 pb-10  md:max-w-full max-w-sm">
-          <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
-            Past Contests
-          </h2>
-          <div className=" overflow-x-auto">
-            <ContestTable
-              contests={bookmarkedContests}
-              isPast={true}
-              type="upcoming"
-            />
-          </div>
-        </div> 
+       {bookmarkedContests.length > 0 ?  
+      //  <div className="relative mt-10 pb-10  md:max-w-full max-w-sm">
+      //     <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
+      //       Past Contests
+      //     </h2>
+      //     <div className=" overflow-x-auto">
+      //       <ContestTable
+      //         contests={bookmarkedContests}
+      //         isPast={true}
+      //         type="upcoming"
+      //       />
+      //     </div>
+      //   </div> 
+      <div>
+        <ContestList data={bookmarkedContests} />
+        </div>
 
         :
         <div className=" flex justify-center items-center">

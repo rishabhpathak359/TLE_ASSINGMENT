@@ -1,5 +1,11 @@
 import prisma from "../utils/dbConnect.js";
-export const addBookmark =  async (req, res) => {
+import axios from "axios";
+
+// Clist API Configuration
+const CLIST_API_KEY = "YOUR_CLIST_API_KEY"; // Replace with actual key
+const CLIST_API_URL = "https://clist.by/api/v4/contest/";
+
+export const addBookmark = async (req, res) => {
   try {
     const { userId, contestId } = req.body;
 
@@ -27,8 +33,7 @@ export const addBookmark =  async (req, res) => {
   }
 };
 
-// 🔹 Remove a Bookmark
-export const removeBookmark =  async (req, res) => {
+export const removeBookmark = async (req, res) => {
   try {
     const { userId, contestId } = req.body;
 
@@ -51,35 +56,57 @@ export const removeBookmark =  async (req, res) => {
   }
 };
 
-// 🔹 Get All Bookmarked Contests for a User
 export const getBookmarks = async (req, res) => {
   try {
-    let { userId, platforms = "all" } = req.query;
+    const { userId } = req.query; // Ensure userId is coming from request
 
     if (!userId) {
       return res.status(400).json({ message: "userId is required" });
     }
 
-    let whereClause = { userId };
-
-    if (platforms !== "all") {
-      const selectedPlatforms = platforms.split(",").map((p) => p.trim().toUpperCase());
-      if (selectedPlatforms.length > 0) {
-        whereClause.contest = { platform: { in: selectedPlatforms } };
-      }
-    }
-
+    // Get contest IDs from database
     const bookmarks = await prisma.bookmarks.findMany({
-      where: whereClause,
-      include: { contest: true },
+      where: { userId },
+      select: { contestId: true },
     });
 
-    res.json({ bookmarks });
+    const contestIds = bookmarks.map((b) => b.contestId);
+
+    if (contestIds.length === 0) {
+      return res.json({ success: true, contests: [] });
+    }
+
+    // Fetch contest details from Clist API
+    const contestDetails = await fetchContestsFromClist(contestIds);
+
+    res.json({ success: true, contests: contestDetails });
   } catch (error) {
     console.error("Error fetching bookmarks:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
+const fetchContestsFromClist = async (contestIds) => {
+  try {
+    const contests = await Promise.all(
+      contestIds.map(async (id) => {
+        try {
+          const response = await axios.get(`${CLIST_API_URL}${id}/`, {
+            headers: {
+              Authorization: process.env.CLIST_API_KEY,
+            },
+          });
+          return response.data;
+        } catch (error) {
+          console.error(`Error fetching contest ${id}:`, error.message);
+          return null;
+        }
+      })
+    );
 
-// export default router;
+    return contests.filter((contest) => contest !== null);
+  } catch (error) {
+    console.error("Error fetching from Clist API:", error);
+    return [];
+  }
+};

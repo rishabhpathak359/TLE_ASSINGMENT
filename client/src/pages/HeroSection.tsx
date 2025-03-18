@@ -29,15 +29,16 @@ const HeroSection = () => {
         </div>
       </motion.div>
 
-      {/* Left Curly Brace */}
-      <div className=" md:block hidden absolute left-5 md:left-44  top-1/2 transform -translate-y-1/2 text-[120px] md:text-[300px] font-bold text-gray-400 dark:text-gray-600 opacity-50">
-        {"{"}
-      </div>
+     {/* Left Curly Brace */}
+<div className="hidden md:block absolute left-2 md:left-10 top-1/2 transform -translate-y-1/2 text-[15vw] md:text-[15vw] lg:text-[20vw] font-bold text-gray-400 dark:text-gray-600 opacity-50">
+  {"{"}
+</div>
 
-      {/* Right Curly Brace */}
-      <div className="md:block hidden absolute right-5 md:right-44 top-1/2 transform -translate-y-1/2 text-[120px] md:text-[300px] font-bold text-gray-400 dark:text-gray-600 opacity-50">
-        {"}"}
-      </div>
+{/* Right Curly Brace */}
+<div className="hidden md:block absolute right-2 md:right-10 top-1/2 transform -translate-y-1/2 text-[15vw] md:text-[15vw] lg:text-[20vw] font-bold text-gray-400 dark:text-gray-600 opacity-50">
+  {"}"}
+</div>
+
 
       {/* Content */}
       <motion.div
@@ -49,7 +50,7 @@ const HeroSection = () => {
         <p className="text-sm uppercase tracking-wide px-3 py-1 rounded-full inline-block mb-4 transition-colors duration-300 bg-gray-200 text-black dark:bg-gray-800 dark:text-white">
           Stay Ahead with Coding Contests
         </p>
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight">
+        <h1 className="text-4xl md:text-3xl lg:text-6xl font-bold leading-tight">
           <span>Upcoming & Past </span>
           <span className="italic dark:text-gray-400 text-gray-600">Programming</span>
           <span> Contests</span>

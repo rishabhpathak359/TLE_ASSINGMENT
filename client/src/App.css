@@ -26,6 +26,29 @@
   display: none;
 }
 
+.fc .fc-button-primary{
+  border: 1px solid gray;
+  background-color: var(--muted);
+}
+.fc-button-group{
+  gap: 10px;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: var(--muted-foreground);
+}
+ .fc-dayGridMonth-view .fc-scrollgrid  .fc-scrollgrid-liquid {
+  border-collapse: collapse !important;
+   
+  /* table-layout: ; */
+  border: none;
+}
+
+
+table, th, td {
+  border: none;
+}
+
 /* Hide scrollbar for Firefox */
 html {
   scrollbar-width: none;

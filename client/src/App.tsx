@@ -9,6 +9,7 @@ import HeroSection from './pages/HeroSection';
 import PrivateRoute from './components/PrivateRoute';
 import BookMarks from './components/BookMarks';
 import SearchContest from './components/SearchContest';
+import Solutions from './pages/Solutions';
 // import Footer from './components/Footer';
 
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/contests" element={<PrivateRoute element={<ContestList />}/>} />
           <Route path="/contests/bookmarks" element={<PrivateRoute element={<BookMarks />}/>} />
           <Route path="/contests/searchContests" element={<PrivateRoute element={<SearchContest />}/>} />
+          <Route path="/contests/solutions" element={<PrivateRoute element={<Solutions />}/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>

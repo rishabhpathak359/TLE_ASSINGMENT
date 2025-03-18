@@ -10,17 +10,17 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({ totalPages = 1, setPage, page = 1 }) => {
   return (
-    <div className="flex justify-between items-center mt-4">
+    <div className="flex justify-between items-center mt-4 gap-5">
       {/* Previous Button */}
-      <Button onClick={() => setPage(Math.max(page - 1, 1))} disabled={page <= 1}>
+      <Button onClick={() => setPage(Math.max(page - 1, 1))} disabled={page <= 1} className="dark:bg-background dark:text-white bg-white text-black">
         <ChevronLeft size={16} /> Prev
       </Button>
 
       {/* Page Info */}
-      <span>Page {page} / {totalPages}</span>
+      <span className="dark:text-white text-black">Page {page} / {totalPages}</span>
 
       {/* Next Button */}
-      <Button onClick={() => setPage(Math.min(page + 1, totalPages))} disabled={page >= totalPages}>
+      <Button onClick={() => setPage(Math.min(page + 1, totalPages))} disabled={page >= totalPages} className="dark:bg-background dark:text-white bg-black text-white">
         Next <ChevronRight size={16} />
       </Button>
     </div>
