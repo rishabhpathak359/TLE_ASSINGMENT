@@ -1,6 +1,6 @@
 import Pagination from '@/components/Pagination';
 import { useQuery } from '@tanstack/react-query';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import SolutionCard from '@/components/SolutionCard';
 import { defaulturl } from '@/utils/constants';
@@ -40,7 +40,7 @@ const Solutions = () => {
     return response.json();
   };
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['solutions', page, selectedPlatforms, debouncedQuery], // Runs when `debouncedQuery` changes
     queryFn: () => fetchSolutions(page, debouncedQuery),
     placeholderData: (previousData) => previousData ?? undefined,

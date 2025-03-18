@@ -1,5 +1,5 @@
 
-import { ThumbsUp, ThumbsDown, YoutubeIcon, LucideYoutube } from "lucide-react";
+import {  LucideYoutube } from "lucide-react";
 
 interface Solution {
   solution :{title: string;
