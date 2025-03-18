@@ -96,7 +96,7 @@ const SearchContest = () => {
       {selectedContest &&
          <div className="relative mt-10 pb-10  w-full md:w-max px-2">
          <div className=" overflow-x-auto">
-       //  <ContestTable contests={[selectedContest]} isPast={true} type="upcoming" />
+       
          </div>
          {/* <Pagination totalPages={pastData.totalPages || 1} setPage={setPage} page={page} /> */}
        </div>
