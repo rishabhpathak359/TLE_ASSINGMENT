@@ -284,10 +284,11 @@ cd TLE_ASSIGNMENT/client
 # Step 2: Install the necessary dependencies
 npm install
 
-# Step 3: Create an `.env` file and add the required API keys
-YOUTUBE_API_KEY=your_youtube_api_key
+# Step 3: Create an `.env` file and add the required API keys and MongoDB configuration
+YT_API_KEY=your_youtube_api_key
 CLIST_API_KEY=your_clist_api_key
-
+DATABASE_URL=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
 # Step 4: Start the backend server
 node index.js
 ```
