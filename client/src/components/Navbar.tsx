@@ -159,7 +159,11 @@ const Navbar = () => {
           {isAuthenticated ? (
             <>
             <button
-              onClick={logout}
+              onClick={()=>
+                {
+                  setShowSettings(true);
+                  setIsDropdownOpen(false);
+                }}
               className="px-6 py-3 flex items-center gap-2 border rounded-md mx-2 text-gray-700 dark:text-gray-200  border-t"
             >
               <Settings size={18} />
