@@ -21,8 +21,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full backdrop-blur-lg z-50 bg-background/40 text-gray-800 dark:text-gray-100 py-4 px-2 md:px-3 lg:px-16 flex justify-between items-center shadow-md">
+    <nav className="fixed top-0 left-0 w-full  z-50 bg-background/40 backdrop-blur-lg text-gray-800 dark:text-gray-100 py-4 px-2 md:px-3 lg:px-16 flex justify-between items-center shadow-md">
       {/* Logo */}
+      {/* <div className="absolute w-full backdrop-blur-lg"></div> */}
       <div className="flex items-center gap-2">
         <Link to="/" className="flex items-center gap-2">
           <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
@@ -76,9 +77,13 @@ const Navbar = () => {
             {isDropdownOpen ?<ChevronUp size={18}/> :<ChevronDown size={18} />}
           </button>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-background/40 backdrop-blur-lg border shadow-md rounded-md py-2">
-              <button
-              onClick={()=>setShowSettings(true)}
+            <div className="absolute right-0 mt-2 w-48 bg-white/80 backdrop-blur-lg dark:bg-background/80 shadow-md border  rounded-md py-2 backdrop-blur-lg">
+                <button
+                 onClick={()=>
+                  {
+                    setShowSettings(true);
+                    setIsDropdownOpen(false);
+                  }}
                 className="block w-full text-left px-4 cursor-pointer py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-muted "
               >
                 <Settings size={18} className="inline mr-2" /> Settings
@@ -133,7 +138,7 @@ const Navbar = () => {
 
       {/* Collapsible Mobile Menu */}
       {isMenuOpen && (
-        <div className="absolute top-full left-0 w-full border-b bg-background/40 backdrop-blur-lg  text-gray-900 dark:text-gray-100 shadow-lg py-4 flex flex-col gap-4 md:hidden">
+        <div className="absolute top-full left-0 w-full border-b bg-background/80 backdrop-blur-lg  text-gray-900 dark:text-gray-100 shadow-lg py-4 flex flex-col gap-4 md:hidden">
           {/* {isAuthenticated && ( */}
             <>
               <Link to="/contests" className="px-6 py-3 flex items-center gap-2 border-b">
@@ -163,6 +168,7 @@ const Navbar = () => {
                 {
                   setShowSettings(true);
                   setIsDropdownOpen(false);
+                  setIsMenuOpen(false)
                 }}
               className="px-6 py-3 flex items-center gap-2 border rounded-md mx-2 text-gray-700 dark:text-gray-200  border-t"
             >
