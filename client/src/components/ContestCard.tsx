@@ -178,10 +178,10 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
     >
       <div className="flex items-center justify-between">
         {/* Fixed width for contest name with ellipsis for overflow */}
-        <h2 className="text-lg font-semibold w-[250px] truncate">
+        <h2 className="text-sm md:text-lg font-semibold w-[250px] truncate">
           {contest.event}
         </h2>
-        <div className="flex space-x-2">
+        <div className="flex md:space-x-2 md:text-lg text-sm">
           <button onClick={()=>toggleNotification(contest)} className="cursor-pointer">
         {toggleNotificationForContest(contest) ? <Bell className="text-blue-500" /> : <BellOff className="text-gray-400" />}
       </button>

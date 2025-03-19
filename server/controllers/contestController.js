@@ -1,124 +1,4 @@
-// import prisma from "../utils/dbConnect.js";
-
-import axios from "axios";
-
-// export const contests = async (req, res) => {
-//   try {
-//     let { platforms = "all", page = 1, limit = 10, type = "all" } = req.query;
-
-//     console.log(`📌 Fetching contests: platforms=${platforms}, type=${type}, page=${page}, limit=${limit}`);
-
-//     page = parseInt(page, 10);
-//     limit = parseInt(limit, 10);
-
-//     let whereClause = {};
-
-//     if (platforms !== "all") {
-//       const selectedPlatforms = platforms.split(",").map((p) => p.trim().toUpperCase());
-//       if (selectedPlatforms.length > 0) {
-//         whereClause.platform = { in: selectedPlatforms };
-//       }
-//     }
-
-//     const contestType = type.trim().toLowerCase();
-    
-//     if (contestType === "upcoming") {
-//       whereClause.contestDateTime = { gte: new Date() };
-//     } else if (contestType === "past") {
-//       whereClause.contestDateTime = { lt: new Date() }; 
-//     }
-
-//     // console.log("🕒 Current Date:", currentDateTime);
-//     // console.log("🔍 Filter Conditions:", JSON.stringify(whereClause, null, 2));
-//     let orderBy = type ==="upcoming" ? "asc" : "desc"
-//     const totalContests = await prisma.contests.count({ where: whereClause });
-
-//     const contests = await prisma.contests.findMany({
-//       where: whereClause,
-//       orderBy: { contestDateTime: orderBy }, 
-//       skip: (page - 1) * limit,
-//       take: limit,
-//     });
-
-//     res.json({
-//       success: true,
-//       totalContests,
-//       currentPage: page,
-//       totalPages: Math.ceil(totalContests / limit),
-//       contests,
-//     });
-
-//   } catch (error) {
-//     console.error("❌ Error fetching contests:", error.message);
-//     res.status(500).json({ success: false, message: "Server Error" });
-//   }
-// };
-
-// export const searchContests = async (req, res) => {
-//   try {
-//     let { query = "", page = 1, limit = 10 } = req.query;
-
-//     console.log(`🔎 Searching contests: query="${query}", page=${page}, limit=${limit}`);
-
-//     page = parseInt(page, 10);
-//     limit = parseInt(limit, 10);
-
-//     if (!query.trim()) {
-//       return res.status(400).json({ success: false, message: "Search query is required" });
-//     }
-
-//     const whereClause = {
-//       title: {
-//         contains: query.trim(),  
-//         mode: "insensitive",     
-//       },
-//     };
-
-//     const totalContests = await prisma.contests.count({ where: whereClause });
-
-//     const contests = await prisma.contests.findMany({
-//       where: whereClause,
-//       orderBy: { contestDateTime: "desc" },
-//       skip: (page - 1) * limit,
-//       take: limit,
-//     });
-
-//     res.json({
-//       success: true,
-//       totalContests,
-//       currentPage: page,
-//       totalPages: Math.ceil(totalContests / limit),
-//       contests,
-//     });
-
-//   } catch (error) {
-//     console.error("❌ Error searching contests:", error.message);
-//     res.status(500).json({ success: false, message: "Server Error" });
-//   }
-// };
-
-// export const updateSolution = async (req, res) => {
-//   const { contestId } = req.params;
-//   const { solution } = req.body;
-
-//   if (!solution) {
-//       return res.status(400).json({ message: "Solution link is required" });
-//   }
-
-//   try {
-//       const updatedContest = await prisma.contests.update({
-//           where: { id: contestId },
-//           data: { solution },
-//       });
-
-//       res.status(200).json({ message: "Solution updated successfully", contest: updatedContest });
-//   } catch (error) {
-//       console.error("Error updating solution:", error);
-//       res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
-
+import axios from "axios"
 const playlists = {
   leetcode: "PLcXpkI9A-RZI6FhydNz3JBt_-p_i25Cbr",
   codechef: "PLcXpkI9A-RZIZ6lsE0KCcLWeKNoG45fYr",
@@ -225,7 +105,7 @@ export const contests = async (req, res) => {
   };
 
   try {
-    let { host = "all", page = 1, limit = 10, type = "upcoming" } = req.query;
+    let { host = "all",query="", page = 1, limit = 10, type = "upcoming" } = req.query;
     page = parseInt(page);
     limit = parseInt(limit);
 
@@ -312,6 +192,10 @@ export const contests = async (req, res) => {
       );
     }
 
+    
+    if (query && query!=="") {
+      filteredContests = filteredContests.filter((contest) => contest.event.toLowerCase().includes(query.toLowerCase()));
+    }
     // Pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
@@ -328,49 +212,3 @@ export const contests = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch contests" });
   }
 };
-
-
-
-// const playlists = {
-//   leetcode: "PLcXpkI9A-RZI6FhydNz3JBt_-p_i25Cbr",
-//   codechef: "PLcXpkI9A-RZIZ6lsE0KCcLWeKNoG45fYr",
-//   codeforces: "PLcXpkI9A-RZLUfBSNp-YQBCOezZKbDSgB",
-// };
-
-
-// const fetchSolutionVideos = async (playlistId) => {
-//   let allVideos = [];
-//   let nextPageToken = "";
-
-//   try {
-//     do {
-//       const response = await axios.get(
-//         `https://www.googleapis.com/youtube/v3/playlistItems`,
-//         {
-//           params: {
-//             part: "snippet",
-//             maxResults: 50,
-//             playlistId,
-//             pageToken: nextPageToken, 
-//             key: process.env.YOUTUBE_API_KEY,
-//           },
-//         }
-//       );
-
-//       const videos = response.data.items.map((video) => ({
-//         title: video.snippet.title.toLowerCase(),
-//         link: `https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`,
-//       }));
-
-//       allVideos = [...allVideos, ...videos];
-//       nextPageToken = response.data.nextPageToken || "";
-//     } while (nextPageToken); 
-
-//     console.log(`📌 Fetched ${allVideos.length} videos from playlist ${playlistId}`);
-//     // console.log(allVideos);
-//     return allVideos;
-//   } catch (error) {
-//     console.error(`❌ Error fetching videos for playlist ${playlistId}:`, error);
-//     return [];
-//   }
-// };

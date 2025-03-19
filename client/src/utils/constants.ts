@@ -30,3 +30,9 @@ export interface Contest {
     isPast: boolean;
     type: string;
   }
+
+  export interface ContestsResponse {
+    contests: Contest[];
+    totalPages: number;
+  }
+  
