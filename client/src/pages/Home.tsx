@@ -108,51 +108,67 @@ const Home = () => {
   };
 
   return (
-    <div className="relative flex flex-col items-start min-h-screen bg-background text-white px-6 md:px-12 lg:px-24 mt-32">
-      {/* Title & Description */}
-      {/* <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <h1 className="text-4xl text-black dark:text-white font-bold">Programming Contests</h1>
-        <p className="text-gray-400 mt-1">Find and track upcoming programming contests from various platforms.</p>
-      </motion.div> */}
+    <div className="relative flex flex-col items-start min-h-screen bg-background text-white px-6 md:px-12 lg:px-24 mt-20 md:mt-28">
+       <div className="hidden fixed inset-0 md:hidden md:dark:flex items-center justify-center pointer-events-none">
+        <div className="absolute w-80 h-80 dark:block hidden bg-gray-500 opacity-20 blur-3xl rounded-full top-1/4 left-1/4"></div>
+        <div className="absolute w-64 h-64 dark:block hidden bg-gray-500 opacity-20 blur-3xl rounded-full bottom-1/5 right-1/10"></div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 bg-gray-100 dark:bg-muted rounded-lg p-1 mt-6">
-        {["Upcoming", "Live", "Past", "Calendar"].map((tab) => (
-          <button
-            key={tab}
-            className={` px-3 md:px-6 py-2 rounded-md text-xs md:text-sm font-medium transition-all ${
-              activeTab.toLowerCase() === tab.toLowerCase()
-                ? "dark:bg-black dark:text-white text-black bg-white"
-                : "text-gray-400 dark:text-gray-300 hover:cursor-pointer"
-            }`}
-            onClick={() =>
-              setActiveTab(tab.toLowerCase() as "upcoming" | "past")
-            }
-          >
-            {tab}
-          </button>
-        ))}
+        {/* <div className="w-[800px] h-[300px] bg-[radial-gradient(ellipse_at_center,rgba(0,255,170,0.3)_0%,rgba(0,0,0,0.8)_70%)] blur-[120px] rotate-[120deg]"></div> */}
       </div>
+      <motion.div
+  initial={{ opacity: 0, y: -10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="flex gap-2 bg-gray-100 dark:bg-muted rounded-lg p-1 mt-6"
+>
+  {["Upcoming", "Live", "Past", "Calendar"].map((tab) => (
+    <motion.button
+      key={tab}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className={`px-3 md:px-6 py-2 rounded-md text-xs md:text-sm font-medium transition-all ${
+        activeTab.toLowerCase() === tab.toLowerCase()
+          ? "dark:bg-black dark:text-white text-black bg-white"
+          : "text-gray-400 dark:text-gray-300 hover:cursor-pointer"
+      }`}
+      onClick={() => setActiveTab(tab.toLowerCase() as "upcoming" | "past")}
+    >
+      {tab}
+    </motion.button>
+  ))}
+</motion.div>
+
 
       {/* Search Bar & Platform Filter */}
       <div
-        className={` flex flex-wrap items-center gap-4 mt-6`}
+        className={` flex flex-col md:flex-row  md:items-center gap-4 md:gap-1 mt-6 w-full`}
       >
         {/* Search Bar */}
-        <div
-          className={`${activeTab === "calendar" && "hidden"} flex items-center w-full md:w-96 text-gray-400 border border-gray-700 px-4 py-2 rounded-md shadow-md cursor-pointer transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500 hover:bg-gray-700`}
-          onClick={() => navigate("/contests/searchContests")}
-        >
-          <Search className="text-gray-400 mr-2" size={18} />
-          <span>Search contests...</span>
-        </div>
+        <motion.div
+  initial={{ opacity: 0, x: -20 }}
+  animate={{ opacity: 1, x: 0 }}
+  transition={{ duration: 0.5, delay: 0.2 }}
+  className="flex items-center w-full text-gray-400 border px-4 py-2 rounded-md md:rounded-l-full shadow-md cursor-pointer transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500"
+  onClick={() => navigate("/contests/searchContests")}
+>
+  <Search className="text-gray-400 mr-2" size={18} />
+  <span>Search contests...</span>
+</motion.div>
+
 
         {/* Platform Dropdown */}
        {
       //  activeTab!=="calendar" &&
-        (<DropdownMenu >
+
+        (
+          <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+        <DropdownMenu >
           <DropdownMenuTrigger asChild>
-            <Button className="flex items-center justify-between w-40 bg-background border text-black hover:bg-background cursor-pointer dark:text-white px-4 rounded-md shadow-md">
+            <Button className={`flex items-center justify-between w-40 bg-background border text-black hover:bg-background cursor-pointer dark:text-white px-4 py-5 rounded-md ${activeTab !=="calendar" && "md:rounded-r-full"} shadow-md`}>
               {selectedPlatforms.includes("all")
                 ? "Platform"
                 : selectedPlatforms.length > 1
@@ -176,7 +192,9 @@ const Home = () => {
               </DropdownMenuCheckboxItem>
             ))}
           </DropdownMenuContent>
-        </DropdownMenu>)}
+        </DropdownMenu>
+        </motion.div>
+        )}
       </div>
 
       {/* Loading State (Skeleton UI) */}
@@ -188,7 +206,7 @@ const Home = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: i * 0.1 }}
-              className="h-24 bg-gray-700 animate-pulse rounded-lg"
+              className="h-64 bg-gray-300 dark:bg-muted animate-pulse rounded-lg"
             ></motion.div>
           ))}
         </div>

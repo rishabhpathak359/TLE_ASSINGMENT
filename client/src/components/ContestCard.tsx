@@ -38,24 +38,26 @@ const platformIcons: Record<string, string> = {
 };
 
 const ContestCard: React.FC<ContestProps> = ({ contest }) => {
-  const { bookmarkedContests, toggleBookmark, filterVideosByTitle, toggleNotification, notificationEnabled} = useAuth();
+  const { bookmarkedContests, toggleBookmark, filterVideosByTitle, toggleNotification, toggleNotificationForContest} = useAuth();
   // const [showSettings, setShowSettings] = useState(false);
   // const [isNotified, setIsNotified] = useState(
   //   JSON.parse(localStorage.getItem("notifications") || "{}")[contest.id] || false
   // );
   // console.log("SOlu",solutions)
+  let solution;
   if(contest.contestType === "past"){
     const eventName = contest.event.split(" | ")[0]; 
     const words = eventName.split(" ");
     const contestNumber = words.find((word) => /^\d{2,}$/.test(word)); 
+    // const mutableContest = { ...contest };
     if (contestNumber) {
       const platformName =contest.resource.split(".")[0];
       const searchQuery = `${platformName} ${contestNumber}`;
 
       // Find the best match
-      const solution = filterVideosByTitle(searchQuery)[0]?.url;
+      const solutionF = filterVideosByTitle(searchQuery)[0]?.url;
 
-      contest.solution = solution;
+      solution = solutionF;
       console.log(searchQuery, solution);
     }
   }
@@ -75,10 +77,10 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
     if (contest.contestType !== "upcoming") return;
 
     const updateTimer = () => {
-      const startTime = new Date(contest.start).getTime();
-      const now = new Date().getTime();
-      const diff = startTime - now;
-
+      const startTimeIST = getISTTime(contest.start).getTime(); // Get IST time
+      const nowIST = new Date().getTime(); // Get current IST time
+      const diff = startTimeIST - nowIST;
+  
       if (diff > 0) {
         setTimeLeft({
           days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -94,15 +96,17 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
     return () => clearInterval(interval);
   }, [contest.start, contest.contestType]);
 
-  const formatDateForGoogleCalendar = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toISOString().replace(/-|:|\.\d+/g, "");
-  };
+  // const formatDateForGoogleCalendar = (dateString: string) => {
+  //   const date = new Date(dateString);
+  //   return date.toISOString().replace(/-|:|\.\d+/g, "");
+  // };
 
   const getGoogleCalendarLink = (contest: ContestProps["contest"]) => {
-    const startDate = formatDateForGoogleCalendar(contest.start);
-    const endDate = formatDateForGoogleCalendar(contest.end);
-    const eventName = encodeURIComponent(contest.event);
+    const startIST = getISTTime(contest.start);
+    const endIST = getISTTime(contest.end);
+    const startDate = startIST.toISOString().replace(/-|:|\.\d+/g, "").slice(0, 15) + "Z";
+    const endDate = endIST.toISOString().replace(/-|:|\.\d+/g, "").slice(0, 15) + "Z";
+   const eventName = encodeURIComponent(contest.event);
     const eventDetails = encodeURIComponent(
       `Hosted by ${contest.host}. Visit: ${contest.href}`
     );
@@ -155,13 +159,20 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
   //   localStorage.setItem("notifications", JSON.stringify(notifications));
   //   setIsNotified(!isNotified);
   // };
-
+  const getISTTime = (utcDateString: string) => {
+    const utcDate = new Date(utcDateString);
+    return new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000)); // Convert UTC to IST
+  };
   const durationHours = Math.floor(contest.duration / 3600);
   const durationMinutes = Math.floor((contest.duration % 3600) / 60);
   const isBookmarked = bookmarkedContests.some((b: any) => b.id === contest.id);
 
   return (
     <motion.div
+    // initial={{ opacity: 0, y: 50, scale: 0.9 }}
+    // animate={{ opacity: 1, y: 0, scale: 1 }}
+    // exit={{ opacity: 0, y: 50, scale: 0.9 }}
+    // transition={{ duration: 0.4, ease: "easeOut" }}
       whileHover={{ scale: 1.02 }}
       className="p-5 border rounded-lg shadow-md transition bg-white border-gray-300 text-black dark:bg-background dark:border-gray-700 dark:text-white"
     >
@@ -171,21 +182,8 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           {contest.event}
         </h2>
         <div className="flex space-x-2">
-          {/* <span
-            className={`px-2 py-1 text-xs font-bold rounded ${
-              contest.contestType === "upcoming"
-                ? "bg-green-200 text-green-800 dark:bg-green-800 dark:text-green-200"
-                : contest.contestType === "live"
-                ? "bg-red-200 text-red-800 dark:bg-red-800 dark:text-red-200"
-                : "bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-            }`}
-          >
-            {contest.contestType}
-          </span> */}
-          {/* <Bookmark className="cursor-pointer hover:text-yellow-500" /> */}
-          
           <button onClick={()=>toggleNotification(contest)} className="cursor-pointer">
-        {notificationEnabled(contest) ? <Bell className="text-blue-500" /> : <BellOff className="text-gray-400" />}
+        {toggleNotificationForContest(contest) ? <Bell className="text-blue-500" /> : <BellOff className="text-gray-400" />}
       </button>
           <button
             onClick={() => toggleBookmark(contest as any)}
@@ -208,7 +206,7 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
       </div>
 
       <p className="text-sm mt-2">
-        <strong>Start:</strong> {new Date(contest.start).toLocaleString()}
+        <strong>Start:</strong> {getISTTime(contest.start).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}
       </p>
       <p className="text-sm">
         <strong>Duration:</strong> {durationHours}h {durationMinutes}m
@@ -236,6 +234,7 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
       </div>
 
       <div className="mt-4 flex justify-between">
+        {contest.contestType === "upcoming" ?
         <a
           href={getGoogleCalendarLink(contest)}
           target="_blank"
@@ -245,19 +244,23 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           <span>Add to Calendar</span>
           <CalendarIcon size={18} />
         </a>
-        <div className="flex gap-5">
+        :
 
-       {contest.solution && 
-       <a
-          href={contest.solution}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center space-x-1 text-blue-500 hover:underline"
-        >
-          <span>Solution</span>
-          <ExternalLink size={16} />
-        </a>
-         }
+        solution && 
+        <a
+           href={solution}
+           target="_blank"
+           rel="noopener noreferrer"
+           className="flex items-center space-x-1 text-blue-500 hover:underline"
+         >
+           <span>Solution</span>
+           <ExternalLink size={16} />
+         </a>
+          
+        
+      }
+        {/* <div className="flex gap-5"> */}
+
         <a
           href={contest.href}
           target="_blank"
@@ -267,7 +270,7 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           <span>Visit</span>
           <ExternalLink size={16} />
         </a>
-        </div>
+        {/* </div> */}
       </div>
     </motion.div>
   );

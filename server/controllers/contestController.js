@@ -244,9 +244,11 @@ export const contests = async (req, res) => {
       }
     }
 
-    const currentTime = new Date();
-
-    // Fetch data in parallel
+    const getISTTime = (utcDateString) => {
+      const utcDate = new Date(utcDateString);
+      return new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000)); 
+    };
+    const currentTime = new Date()
     const responses = await Promise.allSettled(
       resourceIds.map((id) =>
         axios.get(`https://clist.by/api/v4/contest/`, {
@@ -262,10 +264,11 @@ export const contests = async (req, res) => {
       )
     );
 
-    // Separate successful and failed responses
+    // Separate successful and failed responses 
     let contests = [];
     let failedRequests = 0;
-
+    console.log("Current IST Time:", currentTime);
+    
     responses.forEach((result) => {
       if (result.status === "fulfilled") {
         contests.push(...result.value.data.objects);
@@ -273,6 +276,14 @@ export const contests = async (req, res) => {
         failedRequests++;
         console.error(`Failed to fetch contests for a platform:`, result.reason);
       }
+    });
+    contests.forEach((contest) => {
+      console.log(
+        // `Contest: ${contest.event}`,
+        `Start: ${getISTTime(contest.start)}`,
+        `End: ${getISTTime(contest.end)}`,
+        `Classified as Live: ${getISTTime(contest.start) <= currentTime && getISTTime(contest.end) > currentTime}`
+      );
     });
 
     // If all API calls failed, return a server error
@@ -287,24 +298,24 @@ export const contests = async (req, res) => {
         ...contests
           .filter(
             (contest) =>
-              new Date(contest.start) <= currentTime && new Date(contest.end) > currentTime
+              getISTTime(contest.start) <= currentTime && getISTTime(contest.end) > currentTime
           )
           .map((contest) => ({ ...contest, contestType: "live" }))
       );
     }
     if (type === "upcoming" || type === "all") {
-      filteredContests.push(
+      filteredContests.push( 
         ...contests
-          .filter((contest) => new Date(contest.start) > currentTime)
-          .sort((a, b) => new Date(a.start) - new Date(b.start))
+          .filter((contest) => getISTTime(contest.start) > currentTime)
+          .sort((a, b) => getISTTime(a.start) - getISTTime(b.start))
           .map((contest) => ({ ...contest, contestType: "upcoming" }))
       );
     }
     if (type === "past" || type === "all") {
       filteredContests.push(
         ...contests
-          .filter((contest) => new Date(contest.end) < currentTime)
-          .sort((a, b) => new Date(b.start) - new Date(a.start))
+          .filter((contest) => getISTTime(contest.end) < currentTime)
+          .sort((a, b) => getISTTime(b.start) - getISTTime(a.start))
           .map((contest) => ({ ...contest, contestType: "past" }))
       );
     }
@@ -313,7 +324,7 @@ export const contests = async (req, res) => {
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     const paginatedContests = filteredContests.slice(startIndex, endIndex);
-
+  
     res.json({
       total: filteredContests.length,
       page,

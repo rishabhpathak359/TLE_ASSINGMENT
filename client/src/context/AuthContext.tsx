@@ -26,7 +26,7 @@ interface AuthContextType {
   isNotified:boolean | undefined;
   showSettings:boolean;
   setShowSettings:(value: boolean) => void;
-  notificationEnabled:(contest : ContestProps) =>boolean;
+  toggleNotificationForContest:(contest : ContestProps) =>boolean;
 }
 
 
@@ -98,6 +98,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("notifyBefore");
+    localStorage.removeItem("notifications");
     setToken(null);
     setUser(null);
     setBookmarkedContests([]);
@@ -257,9 +259,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
       console.log("Hello")
     };
- const notificationEnabled = (contest:ContestProps) => {
+ const toggleNotificationForContest = (contest:ContestProps) => {
   return JSON.parse(localStorage.getItem("notifications") || "{}")[contest.id] || false;
  }
+//  const toggleBrowserNotifications = (contest:ContestProps) => {
+//   if (Notification.permission !== "granted") {
+//     Notification.requestPermission();
+//   }
+//   if(!JSON.parse(localStorage.getItem("notifyBefore") || "{}")){
+//     localStorage.setItem("notifyBefore","10");
+//     toast.success("Notifications enabled now you'll receive notifications prior to contest")
+//   }else{
+//     localStorage.removeItem("notifyBefore");
+//   }
+//  }
   
   return (
     <AuthContext.Provider
@@ -279,7 +292,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isNotified,
         showSettings,
         setShowSettings,
-        notificationEnabled
+        toggleNotificationForContest
       }}
     >
       {children}
