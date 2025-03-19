@@ -5,6 +5,18 @@ const playlists = {
   codeforces: "PLcXpkI9A-RZLUfBSNp-YQBCOezZKbDSgB",
 };
 
+const extractTimestamps = (description) => {
+  const timestampRegex = /(\d{2}:\d{2})\s*(.+)/g;
+  let timestamps = [];
+  let match;
+
+  while ((match = timestampRegex.exec(description)) !== null) {
+    timestamps.push({ time: match[1], title: match[2] });
+  }
+
+  return timestamps;
+};
+
 const fetchSolutionVideos = async (playlistId) => {
   let allVideos = [];
   let nextPageToken = "";
@@ -32,7 +44,8 @@ const fetchSolutionVideos = async (playlistId) => {
           description: video.snippet.description,
           thumbnail: video.snippet.thumbnails?.default?.url || "", // ✅ Handle missing thumbnails
           url: `https://www.youtube.com/watch?v=${video.snippet.resourceId.videoId}`,
-          uploadedAt: video.snippet.publishedAt 
+          uploadedAt: video.snippet.publishedAt, 
+          timestamps: extractTimestamps(video.snippet.description)
         }));
 
       allVideos = [...allVideos, ...videos];
