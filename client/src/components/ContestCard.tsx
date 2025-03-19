@@ -137,11 +137,11 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
   //   }
   // };
 
-  useEffect(() => {
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (Notification.permission !== "granted") {
+  //     Notification.requestPermission();
+  //   }
+  // }, []);
 
   // const toggleNotification = () => {
   //   if (!localStorage.getItem("notifyBefore")) {
@@ -182,9 +182,9 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           {contest.event}
         </h2>
         <div className="flex md:space-x-2 md:text-lg text-sm">
-          <button onClick={()=>toggleNotification(contest)} className="cursor-pointer">
+        { contest.contestType !== "past" && <button onClick={()=>toggleNotification(contest)} className="cursor-pointer">
         {toggleNotificationForContest(contest) ? <Bell className="text-blue-500" /> : <BellOff className="text-gray-400" />}
-      </button>
+      </button>}
           <button
             onClick={() => toggleBookmark(contest as any)}
             className="p-2 rounded text-black dark:text-white dark:hover:text-white transition hover:cursor-pointer"

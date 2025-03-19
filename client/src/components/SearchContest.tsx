@@ -71,7 +71,7 @@ const SearchContest = () => {
           <Search className="text-gray-400 mr-2" size={18} />
           <input
             type="text"
-            placeholder="Search solutions..."
+            placeholder="Search contests..."
             className="bg-transparent outline-none w-full text-black dark:text-white placeholder-gray-500"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
