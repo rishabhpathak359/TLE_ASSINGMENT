@@ -27,10 +27,10 @@ const App = () => {
       {/* <Wrapper> */}
         <Routes>  {/* Use Routes to wrap your Route components */}
           <Route path="/" element={<HeroSection />} />
-          <Route path="/contests" element={<PrivateRoute element={<ContestList />}/>} />
+          <Route path="/contests"  element={<ContestList />} />
           <Route path="/contests/bookmarks" element={<PrivateRoute element={<BookMarks />}/>} />
-          <Route path="/contests/searchContests" element={<PrivateRoute element={<SearchContest />}/>} />
-          <Route path="/contests/solutions" element={<PrivateRoute element={<Solutions />}/>} />
+          <Route path="/contests/searchContests"  element={<SearchContest />}/>
+          <Route path="/contests/solutions" element={<Solutions/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
         </Routes>

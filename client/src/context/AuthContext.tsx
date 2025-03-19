@@ -106,6 +106,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const fetchBookmarks = async () => {
+    if(!token){
+      return ;
+    }
     try {
       const response = await fetch(`${defaulturl}api/user/bookmarks?userId=${user?.id}`);
       if (!response.ok) throw new Error("Failed to fetch bookmarks");
@@ -118,6 +121,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const toggleBookmark = async (contest: Contest) => {
+    if(!token){
+      toast.error("You need to have an account to bookmark contests");
+      return;
+    }
     // console.log(contest , bookmarkedContests)
     const isBookmarked = bookmarkedContests?.some((b) => b.id === contest.id);
 
