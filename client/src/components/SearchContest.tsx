@@ -2,7 +2,7 @@ import Pagination from '@/components/Pagination';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import SolutionCard from '@/components/SolutionCard';
+// import SolutionCard from '@/components/SolutionCard';
 import { containerVariants, ContestsResponse, defaulturl, itemVariants } from '@/utils/constants';
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu';
 import { Check, ChevronDown, Search } from 'lucide-react';
@@ -34,7 +34,7 @@ const SearchContest = () => {
 
   const fetchSolutions = async (page: number, searchQuery: string) => {
     const limit = 9;
-   let url2 = `${defaulturl}api/contests/getContests?page=${page}&limit=${limit}&type=${eventType.toLowerCase()}&query=${query.toLowerCase()}&host=${selectedPlatforms.join(",")}`;
+   let url2 = `${defaulturl}api/contests/getContests?page=${page}&limit=${limit}&type=${eventType.toLowerCase()}&query=${searchQuery.toLowerCase()}&host=${selectedPlatforms.join(",")}`;
     const {data} = await axios.get<ContestsResponse>(url2);
     return data;
   };
