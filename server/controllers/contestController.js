@@ -277,14 +277,6 @@ export const contests = async (req, res) => {
         console.error(`Failed to fetch contests for a platform:`, result.reason);
       }
     });
-    contests.forEach((contest) => {
-      console.log(
-        // `Contest: ${contest.event}`,
-        `Start: ${getISTTime(contest.start)}`,
-        `End: ${getISTTime(contest.end)}`,
-        `Classified as Live: ${getISTTime(contest.start) <= currentTime && getISTTime(contest.end) > currentTime}`
-      );
-    });
 
     // If all API calls failed, return a server error
     if (failedRequests === resourceIds.length) {

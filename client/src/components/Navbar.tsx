@@ -77,7 +77,7 @@ const Navbar = () => {
             {isDropdownOpen ?<ChevronUp size={18}/> :<ChevronDown size={18} />}
           </button>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white/80 backdrop-blur-lg dark:bg-background/80 shadow-md border  rounded-md py-2 backdrop-blur-lg">
+            <div className="absolute right-0 mt-2 w-48 bg-white/80  dark:bg-background/80 shadow-md border  rounded-md py-2 backdrop-blur-lg">
                 <button
                  onClick={()=>
                   {

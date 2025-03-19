@@ -10,11 +10,19 @@ import PrivateRoute from './components/PrivateRoute';
 import BookMarks from './components/BookMarks';
 import SearchContest from './components/SearchContest';
 import Solutions from './pages/Solutions';
+import useDetectDevTools from './hooks/useDevToolsDetechtor';
 // import Footer from './components/Footer';
-
+const Samp = () => {
+  useDetectDevTools(); 
+  return (
+    // <div>samp</div>
+    null
+  )
+}
 const App = () => {
   return (
     <Router>  {/* Add this Router wrapper */}
+    <Samp/>
       <Navbar />
       {/* <Wrapper> */}
         <Routes>  {/* Use Routes to wrap your Route components */}
