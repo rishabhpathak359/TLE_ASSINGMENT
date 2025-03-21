@@ -1,4 +1,4 @@
-export const defaulturl = "https://tle-assingment.onrender.com/"
+export const defaulturl = "https://tle-assingment-9u4q.vercel.app/"
 // export const defaulturl = "http://localhost:5000/"
 export const containerVariants = {                       //for container animations using framer-motion
   hidden: { opacity: 0, scale: 0.95, y: 20 },
