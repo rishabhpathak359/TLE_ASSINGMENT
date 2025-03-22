@@ -233,7 +233,7 @@ const Home = () => {
         activeTab !== "calendar" &&
         contestData?.contests?.length > 0 && (
           <div className="mt-10 w-full">
-            <h2 className="text-xl font-bold mb-4 text-white">
+            <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
               {contestTypeHeadings[activeTab]}
             </h2>
             <ContestList data={contestData.contests} />

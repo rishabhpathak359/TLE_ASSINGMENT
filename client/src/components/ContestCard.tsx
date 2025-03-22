@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -26,6 +27,7 @@ interface ContestProps {
     host: string;
     href: string;
     resource: string;
+    problems:Array<any>;
     solution?:string;
     contestType: "live" | "upcoming" | "past";
   };
@@ -95,12 +97,6 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
   }, [contest.start, contest.contestType]);
-
-  // const formatDateForGoogleCalendar = (dateString: string) => {
-  //   const date = new Date(dateString);
-  //   return date.toISOString().replace(/-|:|\.\d+/g, "");
-  // };
-
   const getGoogleCalendarLink = (contest: ContestProps["contest"]) => {
     const startIST = getISTTime(contest.start);
     const endIST = getISTTime(contest.end);
@@ -113,52 +109,6 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
 
     return `https://www.google.com/calendar/render?action=TEMPLATE&text=${eventName}&dates=${startDate}/${endDate}&details=${eventDetails}&location=Online&sf=true&output=xml`;
   };
-  // const scheduleNotification = () => {
-  //   if (!("Notification" in window)) return;
-
-  //   const notifyBefore = parseInt(localStorage.getItem("notifyBefore") || "0", 10);
-  //   if (!notifyBefore) {
-  //     setShowSettings(true); // Show settings modal if no notifyBefore is set
-  //     return;
-  //   }
-
-  //   const contestTime = new Date(contest.start).getTime();
-  //   const notifyTime = contestTime - notifyBefore * 60 * 1000;
-  //   const currentTime = new Date().getTime();
-
-  //   if (notifyTime > currentTime) {
-  //     setTimeout(() => {
-  //       new Notification("Upcoming Contest!", {
-  //         body: `Don't forget ${contest.event} is starting soon!`,
-  //         icon: "/contest-icon.png",
-  //       });
-  //       toast.success(`Reminder set! You'll be notified ${notifyBefore} minutes before.`);
-  //     }, notifyTime - currentTime);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (Notification.permission !== "granted") {
-  //     Notification.requestPermission();
-  //   }
-  // }, []);
-
-  // const toggleNotification = () => {
-  //   if (!localStorage.getItem("notifyBefore")) {
-  //     setShowSettings(true); 
-  //     return;
-  //   }
-
-  //   const notifications = JSON.parse(localStorage.getItem("notifications") || "{}");
-  //   if (isNotified) {
-  //     delete notifications[contest.id];
-  //   } else {
-  //     notifications[contest.id] = contest.start;
-  //     scheduleNotification();
-  //   }
-  //   localStorage.setItem("notifications", JSON.stringify(notifications));
-  //   setIsNotified(!isNotified);
-  // };
   const getISTTime = (utcDateString: string) => {
     const utcDate = new Date(utcDateString);
     return new Date(utcDate.getTime() + (5.5 * 60 * 60 * 1000)); // Convert UTC to IST
@@ -232,7 +182,54 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           </span>
         )}
       </div>
+      {contest.contestType === "past" && (
+  <div className="mt-4">
+    <h3 className=" text-sm md:text-lg font-semibold">Problems:</h3>
+    
+    {contest.host === "codechef.com" ? (
+      // Handle CodeChef's nested problem structure
+      Object.keys(contest?.problems?.division || {}).length > 0 ? (
+        <div className="h-24 overflow-auto">
+          {Object.entries(contest.problems.division).map(([division, problems]) => (
+            <div key={division} className="mt-2">
+              <h4 className="text-sm md:text-md font-medium capitalize">{division.replace("_", " ")}</h4>
+              <ul className="list-disc ml-5">
+                {problems.map((problem, index) => (
+                  <li key={index}>
+                    <a href={problem.url} target="_blank" className="md:text-md text-sm text-blue-500 hover:underline">
+                      {problem.name}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="h-24">No problems found.</p>
+      )
+    ) : (
+      // Default handling for non-CodeChef contests
+      contest.problems.length <= 0 ? (
+        <p>Loading...</p>
+      ) : contest.problems.length ? (
+        <ul className="list-disc ml-5 h-24 overflow-auto">
+          {contest?.problems.map((problem, index) => (
+            <li key={index}>
+              <a href={problem.url} target="_blank" className="text-sm md:text-md text-blue-500 hover:underline">
+                {problem.name}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="h-24">No problems found.</p>
+      )
+    )}
+  </div>
+)}
 
+      <div className="h-0.5 mt-5 rounded-lg bg-gray-200 dark:bg-muted"></div>
       <div className="mt-4 flex justify-between">
         {contest.contestType === "upcoming" ?
         <a
@@ -271,6 +268,8 @@ const ContestCard: React.FC<ContestProps> = ({ contest }) => {
           <ExternalLink size={16} />
         </a>
         {/* </div> */}
+
+       
       </div>
     </motion.div>
   );

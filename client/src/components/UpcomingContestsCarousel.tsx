@@ -18,6 +18,7 @@ interface Contest {
   host: string;
   href: string;
   resource: string;
+  problems:Array<any>;
   contestType: "live" | "upcoming" | "past";
 }
 

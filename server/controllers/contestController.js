@@ -147,6 +147,7 @@ export const contests = async (req, res) => {
         axios.get(`https://clist.by/api/v4/contest/`, {
           params: {
             resource_id: id,
+            with_problems:true,
             order_by: "-start",
             limit: 100,
           },
