@@ -12,6 +12,7 @@ interface ContestProps {
   start: string;
   end: string;
   duration: number;
+  problems: Array<any>;
   host: string;
   href: string;
   resource: string;
