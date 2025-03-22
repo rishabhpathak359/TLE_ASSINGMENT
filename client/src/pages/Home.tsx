@@ -24,6 +24,7 @@ interface Contest {
   start: string;
   end: string;
   duration: number; // in seconds
+  problems:Array<any>;
   host: string;
   href: string;
   resource: string;
