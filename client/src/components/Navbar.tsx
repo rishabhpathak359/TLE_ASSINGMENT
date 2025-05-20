@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { UserCircle, Sun, Moon, Menu, X, Bookmark, Youtube, Code2, LogIn, LogOut, UserPlus, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
-import logo from "../assets/tle.png";
+// import logo from "../assets/tle.png";
 
 const Navbar = () => {
   const { user, isAuthenticated, logout, bookmarkedContests, setShowSettings } = useAuth();
