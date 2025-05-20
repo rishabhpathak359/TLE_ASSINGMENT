@@ -1,4 +1,4 @@
-# Programming Contest Tracker (TLE Eliminators Assignment)
+# Programming Contest Tracker 
 
 A comprehensive platform for tracking upcoming, ongoing, and past competitive programming contests across multiple platforms like Codeforces, CodeChef, and LeetCode.
 
