@@ -26,10 +26,12 @@ const Navbar = () => {
       {/* <div className="absolute w-full backdrop-blur-lg"></div> */}
       <div className="flex items-center gap-2">
         <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="Logo" className="w-10 h-10 object-contain" />
-          <span className="hidden lg:block text-lg font-bold text-gray-800 dark:text-gray-100">
-            TLE Eliminators
-          </span>
+          {/* <img src={logo} alt="Logo" className="w-10 h-10 object-contain" /> */}
+          <Code2 size={52} className="text-black dark:text-white" />
+       <span className="hidden lg:block text-xl font-bold bg-gradient-to-r from-orange-400 to-blue-500 bg-clip-text text-transparent">
+  Algoholic
+</span>
+
         </Link>
       </div>
 
